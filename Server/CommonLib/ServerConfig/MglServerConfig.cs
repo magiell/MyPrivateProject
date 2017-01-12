@@ -4,6 +4,8 @@ using SuperSocket.SocketBase.Logging;
 using SuperSocket.SocketBase.Protocol;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Text;
 using System.Threading;
 
 namespace Server.CommonLib.MglServerConfig
@@ -11,10 +13,12 @@ namespace Server.CommonLib.MglServerConfig
     class MglServer : AppServer<Session, MglBinaryRequestInfo>
     {
         //핸들러
-        private Dictionary<int, Action<Session, MglBinaryRequestInfo>> handlerMap = new Dictionary<int, Action<Session, MglBinaryRequestInfo>>();
+        private Dictionary<uint, Action<Session, MglBinaryRequestInfo>> handlerMap = new Dictionary<uint, Action<Session, MglBinaryRequestInfo>>();
 
         private IServerConfig config;
         private HandlerDef handlerDef = new HandlerDef();
+        //1 ~ 127 server No
+        private readonly int ServerNo = int.Parse(ConfigurationManager.AppSettings["ServerNo"]);        
 
         public MglServer()
             : base(new DefaultReceiveFilterFactory<ReceiveFilter, MglBinaryRequestInfo>())
@@ -27,6 +31,7 @@ namespace Server.CommonLib.MglServerConfig
         void RegistHandler()
         {
             handlerMap.Add((int)ProtocolKey.ECHO, handlerDef.Echo);
+            handlerMap.Add((int)ProtocolKey.MSG, handlerDef.SendMsg);
         }
 
         public void InitConfig()
@@ -70,6 +75,11 @@ namespace Server.CommonLib.MglServerConfig
             var id = requestInfo.key;
             var value1 = requestInfo.value1;
             var value2 = requestInfo.value2;
+            if(string.IsNullOrEmpty(session.user_id))
+            {
+                session.user_id = Encoding.Unicode.GetString(requestInfo.Body);
+                session.data = new SessionData() { ServerNo = value1, ChannelNo = value2 };
+            }
 
             if (handlerMap.ContainsKey(id))
             {
@@ -93,8 +103,8 @@ namespace Server.CommonLib.MglServerConfig
         {
             Console.WriteLine("세션 번호 {0} 접속", session.SessionID);
 
-            //세션 검색후에 새로운 세션인 경우에 리스트에 포함
-            
+            //세션 검색후에 새로운 세션인 경우에 리스트에 포함            
+            Console.WriteLine("Server Connected : {0}", session.SessionID);            
 
             Console.WriteLine("세션 연결 요청 받음");
         }

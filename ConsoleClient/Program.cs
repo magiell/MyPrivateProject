@@ -28,6 +28,7 @@ namespace ConsoleClient
             Session.Error += Session_Error;
 
             Session.Connect(serverendpoint);
+            SendMsg(ProtocolKey.ECHO, user_id);
 
             bool quitflag = false;
             while (!quitflag)
@@ -39,7 +40,7 @@ namespace ConsoleClient
                 }
                 else
                 {
-                    SendMsg(ProtocolKey.ECHO, msg);
+                    SendMsg(ProtocolKey.MSG, msg);
                 }
             }
             Session.Close();
@@ -51,10 +52,10 @@ namespace ConsoleClient
             {
                 var body = Encoding.Unicode.GetBytes(v);
                 var dataSource = new List<byte>();
-                dataSource.AddRange(BitConverter.GetBytes((int)key));
-                dataSource.AddRange(BitConverter.GetBytes((short)0));
-                dataSource.AddRange(BitConverter.GetBytes((short)1));
-                dataSource.AddRange(BitConverter.GetBytes(body.Length));
+                dataSource.AddRange(BitConverter.GetBytes((UInt32)key));
+                dataSource.AddRange(BitConverter.GetBytes((UInt32)1));
+                dataSource.AddRange(BitConverter.GetBytes((UInt32)1));
+                dataSource.AddRange(BitConverter.GetBytes((UInt32)body.Length));
                 dataSource.AddRange(body);
                 Session.Send(dataSource.ToArray(), 0, dataSource.Count);
             }
@@ -71,15 +72,15 @@ namespace ConsoleClient
             {
                 var data = new byte[e.Length];
                 Buffer.BlockCopy(e.Data, e.Offset, data, 0, e.Length);
-                var length = BitConverter.ToInt32(data, 8);
-                Console.WriteLine("확인 : " + Encoding.Unicode.GetString(data, 12, length));
+                var length = BitConverter.ToInt32(data, 12);
+                Console.WriteLine("확인 : " + Encoding.Unicode.GetString(data, 16, length));
 
-                var key = BitConverter.ToInt32(data, 0);
-                var value1 = BitConverter.ToInt16(data, 4);
-                var value2 = BitConverter.ToInt16(data, 6);                
-                var text = Encoding.Unicode.GetString(data, 12, length);
+                var key = BitConverter.ToUInt32(data, 0);
+                var value1 = BitConverter.ToUInt32(data, 4);
+                var value2 = BitConverter.ToUInt32(data, 8);                
+                var text = Encoding.Unicode.GetString(data, 16, length);
 
-                Console.WriteLine(text);
+                Console.WriteLine("key : {0}, value1 : {1}, value2 : {2}, text : {3}", key, value1, value2, text);
             }
             Console.WriteLine("세션 데이터 받기 이벤트 발생");
         }
@@ -96,7 +97,7 @@ namespace ConsoleClient
             Console.WriteLine("세션 연결 이벤트 발생");
             if(true == Session.IsConnected)
             {
-                SendMsg(ProtocolKey.ECHO, "user_id");
+                //SendMsg(ProtocolKey.ECHO, "user_id");
             }       
         }
     }

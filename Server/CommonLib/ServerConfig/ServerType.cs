@@ -11,6 +11,7 @@ namespace Server.CommonLib.MglServerConfig
         //default
         NONE = 0,
         ECHO = 1,
+        MSG = 2,
         //
     }
 }

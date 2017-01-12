@@ -30,8 +30,8 @@ namespace Server.CommonLib.MglServerConfig
     [Serializable]
     public class SessionData
     {
-        public short value1 { get; set; }
-        public short value2 { get; set; }
+        public UInt32 ServerNo { get; set; }
+        public UInt32 ChannelNo { get; set; }
     }
 }
 ;
