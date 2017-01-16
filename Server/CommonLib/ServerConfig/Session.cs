@@ -31,7 +31,8 @@ namespace Server.CommonLib.MglServerConfig
     public class SessionData
     {
         public UInt32 ServerNo { get; set; }
-        public UInt32 ChannelNo { get; set; }
+        public UInt32 ChannelNo { get; set; }        
+        public List<UInt32> PrevProtocolStackHistory { get; set; }
     }
 }
 ;

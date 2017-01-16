@@ -75,11 +75,6 @@ namespace Server.CommonLib.MglServerConfig
             var id = requestInfo.key;
             var value1 = requestInfo.value1;
             var value2 = requestInfo.value2;
-            if(string.IsNullOrEmpty(session.user_id))
-            {
-                session.user_id = Encoding.Unicode.GetString(requestInfo.Body);
-                session.data = new SessionData() { ServerNo = value1, ChannelNo = value2 };
-            }
 
             if (handlerMap.ContainsKey(id))
             {

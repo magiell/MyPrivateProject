@@ -12,6 +12,20 @@ namespace Server.CommonLib.MglServerConfig
         NONE = 0,
         ECHO = 1,
         MSG = 2,
+
+        Login,
+        Login_Success,
+        Login_Fail,
+
+        
+
         //
+    }
+
+    public enum ServerNo
+    {
+        Server1,
+        Server2,
+        Server3
     }
 }
